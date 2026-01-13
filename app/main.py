@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
 from uuid import uuid4
 from threading import Lock
@@ -14,7 +14,7 @@ app = FastAPI(title= "Chatbot basics API", version= "0.2.0")
 # -----------------------------
 # Data models (API contracts)
 # -----------------------------
-class ChatRequest(BaseModel):
+class ChatRequest(BaseModel):# ChatRequest is a pydantic model - as inherited from BaseModel it will validate incoming JSON, convert it into a Python object and generates schema/docs for Swagger
     """
     Request body model for POST /chat.
 
@@ -22,7 +22,11 @@ class ChatRequest(BaseModel):
     - session_id: optional identifier to continue an existing conversation
       If the client doesn't send it, we generate a new one.
     """
-    message: str = Field(..., description="User message text")
+    # message is field name.( JSON must include "message".) str is type hint.
+    #Field comes from pydantic - this Field is a string and here are extra rules/info abt it - like required or optional, default values, min/max length etc.
+    # Field is not required but very useful for clean Swagger documentation and stronger validation.
+
+    message: str = Field(..., description="User message text") # 3 dots is a spl built in object -"Ellipsis"  - means - this filed is required (no default values) [here it means "message" is required, and it must be a string, and Swagger will show the description.]
     session_id: Optional[str] = Field(
         default=None,
         description="Conversation/session id. Send this back to continue the chat.",
